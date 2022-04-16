@@ -33,16 +33,19 @@ typedef struct {
 int add_last(void **arr, int *len, data_structure *data) {
 
 	void **offset = (*arr) + (*len);
+	printf("zzz %d\n", *len);
 	u_char tip = (u_char)data->header->type;
-	if(realloc(*arr, (size_t)((size_t)len + (size_t)data->header->len) ) )
+	*len += data->header->len;
+	printf("%d\n", *len);
+	if(!realloc(*arr, (size_t)(*len) ) )
 		return 0;
-
-	memcpy(*offset, &tip, sizeof(u_char));
+	memcpy(*offset, &tip, sizeof(u_char));  // ceva suspect aici
 	*offset += sizeof(u_char);
 	memcpy(*offset, &tip, sizeof(u_int));
 	*offset += sizeof(u_int);
+	printf("skua\n");
 	switch (tip) {
-		case 1:
+		case '1':
 		{
 			tip1 *pAux = (tip1*)data->data;
 			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
@@ -55,7 +58,7 @@ int add_last(void **arr, int *len, data_structure *data) {
 			*offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
-		case 2:
+		case '2':
 		{
 			tip2 *pAux = (tip2*)data->data;
 			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
@@ -68,7 +71,7 @@ int add_last(void **arr, int *len, data_structure *data) {
 			*offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
-		case 3:
+		case '3':
 		{
 			tip3 *pAux = (tip3*)data->data;
 			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
@@ -85,7 +88,7 @@ int add_last(void **arr, int *len, data_structure *data) {
 			return 0;
 	}
 
-*len += data->header->len;
+//*len += data->header->len;
 if(*len - (int)(*offset - *arr) != 0)
 	return 1;
 else
@@ -108,7 +111,7 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 	memcpy(*offset, &tip, sizeof(u_int));
 	*offset += sizeof(u_int);
 	switch (tip) {
-		case 1:
+		case '1':
 		{
 			tip1 *pAux = (tip1*)data->data;
 			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
@@ -121,7 +124,7 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 			*offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
-		case 2:
+		case '2':
 		{
 			tip2 *pAux = (tip2*)data->data;
 			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
@@ -134,7 +137,7 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 			*offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
-		case 3:
+		case '3':
 		{
 			tip3 *pAux = (tip3*)data->data;
 			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
@@ -169,7 +172,7 @@ void find(void *data_block, int len, int index) {
 		offset += sizeof(u_char) + sizeof(u_int);
 		printf("Tipul %d", *type);
 		switch (*type) {
-			case 1:
+			case '1':
 			{
 				char *primulNume = (char*)offset;
 				offset += strlen(primulNume) + 1;
@@ -184,7 +187,7 @@ void find(void *data_block, int len, int index) {
 				printf("%"PRId8"\n", *banc2);
 				break;
 			}
-			case 2:
+			case '2':
 			{
 				char *primulNume = (char*)offset;
 				offset += strlen(primulNume) + 1;
@@ -199,7 +202,7 @@ void find(void *data_block, int len, int index) {
 				printf("%"PRId32"\n", *banc2);
 				break;
 			}
-			case 3:
+			case '3':
 			{
 				char *primulNume = (char*)offset;
 				offset += strlen(primulNume) + 1;
@@ -243,11 +246,11 @@ void print(void *arr, int len) {
 	while(offset < arr + len) {
 		u_char *type = (u_char*)offset;
 		printf("Tipul %d\n", *type);
-
+		char *primulNume = (char*)offset;
 		switch (*type) {
-			case 1:
+			case '1':
 			{
-				char *primulNume = (char*)offset;
+
 				offset += strlen(primulNume) + 1;
 				int8_t *banc1 = (int8_t*)offset;
 				offset += sizeof(int8_t);
@@ -260,9 +263,8 @@ void print(void *arr, int len) {
 				printf("%"PRId8"\n", *banc2);
 				break;
 			}
-			case 2:
+			case '2':
 			{
-				char *primulNume = (char*)offset;
 				offset += strlen(primulNume) + 1;
 				int16_t *banc1 = (int16_t*)offset;
 				offset += sizeof(int16_t);
@@ -275,9 +277,8 @@ void print(void *arr, int len) {
 				printf("%"PRId32"\n", *banc2);
 				break;
 			}
-			case 3:
+			case '3':
 			{
-				char *primulNume = (char*)offset;
 				offset += strlen(primulNume) + 1;
 				int32_t *banc1 = (int32_t*)offset;
 				offset += sizeof(int32_t);
@@ -299,7 +300,7 @@ void print(void *arr, int len) {
 
 void freeStruct(void **el, u_char tip) {
 	switch(tip) {
-		case 1:
+		case '1':
 		{
 			tip1 **pFree = (tip1**)el;
 			free((*pFree)->dedicator);
@@ -308,7 +309,7 @@ void freeStruct(void **el, u_char tip) {
 			break;
 		}
 
-		case 2:
+		case '2':
 		{
 			tip2 **pFree = (tip2**)el;
 			free((*pFree)->dedicator);
@@ -317,7 +318,7 @@ void freeStruct(void **el, u_char tip) {
 			break;
 		}
 
-		case 3:
+		case '3':
 		{
 			tip3 **pFree = (tip3**)el;
 			free((*pFree)->dedicator);
@@ -348,7 +349,7 @@ tip1 *genStruct1(char* sarantoc, int8_t cinciLei, int8_t zeceLei, char* smechera
 
 }
 
-tip2 *genStruct2(char* lucrezLaLidl, int8_t blaga , int8_t eminescu, char* tanc) {
+tip2 *genStruct2(char* lucrezLaLidl, int16_t blaga , int32_t eminescu, char* tanc) {
 	tip2 *data = (tip2*)calloc(1, sizeof(tip2));
 	data->dedicator = (char*)calloc(1, strlen(lucrezLaLidl)+1);
 	strcpy(data->dedicator, lucrezLaLidl);
@@ -359,7 +360,7 @@ tip2 *genStruct2(char* lucrezLaLidl, int8_t blaga , int8_t eminescu, char* tanc)
 	return data;
 }
 
-tip3 *genStruct3(char* boier, int8_t eminescu, int8_t sutadeEuro, char* barosan) {
+tip3 *genStruct3(char* boier, int32_t eminescu, int32_t sutadeEuro, char* barosan) {
 	tip3 *data = (tip3*)calloc(1, sizeof(tip3));
 	data->dedicator = (char*)calloc(1, strlen(boier)+1);
 	strcpy(data->dedicator, boier);
@@ -379,25 +380,25 @@ data_structure *genDataStruct (void *info, int type) {
 
 	int infoLen = 0;
 	switch (type) {
-		case 1 :
+		case '1' :
 		{
 			tip1 *pAux = (tip1*)info;
 			infoLen = (int)(strlen((char*)pAux->dedicator) + strlen((char*)pAux->barosan)+2);
-			infoLen += pAux->bancnota1 + pAux->bancnota2;
+			infoLen += 2*sizeof(int8_t);
 			break;
     }
-		case 2 :
+		case '2' :
 		{
 			tip2 *pAux = (tip2*)info;
 			infoLen = (int)(strlen((char*)pAux->dedicator) + strlen((char*)pAux->barosan)+2);
-			infoLen += pAux->bancnota1 + pAux->bancnota2;
+			infoLen += sizeof(int16_t) + sizeof(int32_t);
 			break;
 		}
-		case 3 :
+		case '3' :
 		{
 			tip3 *pAux = (tip3*)info;
 			infoLen = (int)(strlen((char*)pAux->dedicator) + strlen((char*)pAux->barosan)+2);
-			infoLen += pAux->bancnota1 + pAux->bancnota2;
+			infoLen += 2*sizeof(int32_t);
 			break;
 		}
 		default:
@@ -405,7 +406,7 @@ data_structure *genDataStruct (void *info, int type) {
 
 	}
 
-	infoHeader->len = sizeof(data_structure) + sizeof(head) + sizeof(info) + infoLen;
+	infoHeader->len = sizeof(u_char) + sizeof(u_int) + infoLen;
 	celula->header = infoHeader;
 
 	return celula;
@@ -454,60 +455,69 @@ cuvant[contorWordVec] = strtok(NULL, " ");
 // add last  block
 
 if (strcmp(cuvant[0], "insert") == 0) {
-	int8_t tip = (int8_t)atoi(cuvant[1]);
+	printf("insert\n");
+	u_char tip = *cuvant[1];
 	data_structure *element = NULL; // vezi poate ramane dangling pointer daca nu il faci null dupa
+	printf("%c\n",  tip);
 	switch (tip) {
 
-		case 1:
+		case '1':
 		{
 			int8_t bancnota1 = (int8_t)atoi(cuvant[3]);
 			int8_t bancnota2 = (int8_t)atoi(cuvant[4]);
+			printf("Dwa1\n");
 			tip1 *pAux = genStruct1(cuvant[2], bancnota1, bancnota2, cuvant[5]);
 			element = genDataStruct(pAux, tip);
-			freeStruct((void**)&pAux, tip);
+			//freeStruct((void**)&pAux, tip);
 			// free struct1 si datastruct
 			break;
 		}
 
-		case 2:
+		case '2':
 		{
+			printf("Dwa2\n");
 			int16_t bancnota1 = (int16_t)atoi(cuvant[3]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[4]);
 			tip2 *pAux = genStruct2(cuvant[2], bancnota1, bancnota2, cuvant[5]);
 			element = genDataStruct(pAux, tip);
-			freeStruct((void**)&pAux, tip);
-			// free struct2 si datastruct
+			//freeStruct((void**)&pAux, tip);
+			// free struct2 si datastructx
 			break;
 		}
 
-		case 3:
+		case '3':
 		{
+			printf("Dwa3\n");
 			int32_t bancnota1 = (int32_t)atoi(cuvant[3]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[4]);
 			tip3 *pAux = genStruct3(cuvant[2], bancnota1, bancnota2, cuvant[5]);
+			printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
-			freeStruct((void**)&pAux, tip);
+			pAux = element->data;
+			printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
+			//freeStruct((void**)&pAux, tip);
 			// free struct3 si datastruct
 			break;
 		}
 	}
+	printf("E ok\n");
 
 	if(!add_last(&arr,&len, element))
 		return 1;
-	freeData(&element);
+	//freeData(&element);
 }
 
 // insert at block
 
 if (strcmp(cuvant[0], "insert_at") == 0) {
 
-
+	printf("insert_at\n");
 	int index = atoi(cuvant[1]);
-	int8_t tip = (int8_t)atoi(cuvant[2]);
+	u_char tip = *cuvant[2];
 	data_structure *element = NULL; // vezi poate ramane dangling pointer daca nu il faci null dupa
 	switch (tip) {
 
-		case 1:
+		case '1':
 		{
 			int8_t bancnota1 = (int8_t)atoi(cuvant[4]);
 			int8_t bancnota2 = (int8_t)atoi(cuvant[5]);
@@ -517,7 +527,7 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			break;
 		}
 
-		case 2:
+		case '2':
 		{
 			int16_t bancnota1 = (int16_t)atoi(cuvant[4]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[5]);
@@ -527,7 +537,7 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			break;
 		}
 
-		case 3:
+		case '3':
 		{
 			int32_t bancnota1 = (int32_t)atoi(cuvant[4]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[5]);
@@ -540,18 +550,19 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 
 	if(!add_at(&arr,&len, element, index))
 		return 1;
-	freeData(&element);
+	//freeData(&element);
 
 }
 
 if (strcmp(cuvant[0], "print") == 0) {
-
+	printf("print\n");
+	print(arr, len);
 }
 
 
 //  exit block
 if (strcmp(cuvant[0], "exit") == 0) {
-
+	printf("exit\n");
 	// free vector //
 
 	free(arr);
