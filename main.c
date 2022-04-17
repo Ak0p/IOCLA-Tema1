@@ -32,122 +32,66 @@ typedef struct {
 
 int add_last(void **arr, int *len, data_structure *data) {
 
-	void **offset = (*arr) + (*len);
-	printf("zzz %d\n", *len);
+//	printf("IN FUNCTION %p\n",*arr);
+//	printf("%p\n",*arr);
+//	printf("zzz %d\n", *len);
 	u_char tip = (u_char)data->header->type;
-	*len += data->header->len;
-	printf("%d\n", *len);
-	if(!realloc(*arr, (size_t)(*len) ) )
-		return 0;
-	memcpy(*offset, &tip, sizeof(u_char));  // ceva suspect aici
-	*offset += sizeof(u_char);
-	memcpy(*offset, &tip, sizeof(u_int));
-	*offset += sizeof(u_int);
-	printf("skua\n");
-	switch (tip) {
-		case '1':
-		{
-			tip1 *pAux = (tip1*)data->data;
-			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			*offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(*offset, &pAux->bancnota1, sizeof(int8_t));
-			*offset += sizeof(int8_t);
-			memcpy(*offset, &pAux->bancnota2, sizeof(int8_t));
-			*offset += sizeof(int8_t);
-			memcpy(*offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			*offset += strlen((char*)pAux->barosan)+1;
-			break;
-		}
-		case '2':
-		{
-			tip2 *pAux = (tip2*)data->data;
-			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			*offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(*offset, &pAux->bancnota1, sizeof(int16_t));
-			*offset += sizeof(int16_t);
-			memcpy(*offset, &pAux->bancnota2, sizeof(int32_t));
-			*offset += sizeof(int32_t);
-			memcpy(*offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			*offset += strlen((char*)pAux->barosan)+1;
-			break;
-		}
-		case '3':
-		{
-			tip3 *pAux = (tip3*)data->data;
-			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			*offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(*offset, &pAux->bancnota1, sizeof(int32_t));
-			*offset += sizeof(int32_t);
-			memcpy(*offset, &pAux->bancnota2, sizeof(int32_t));
-			*offset += sizeof(int32_t);
-			memcpy(*offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			*offset += strlen((char*)pAux->barosan)+1;
-			break;
-		}
-		default:
-			return 0;
+	u_int structLen = (u_char)data->header->len;
+//	printf("len   %d   structlen  %d\n", *len, data->header->len);
+	if(!(*arr))
+		*arr = malloc(data->header->len);
+	else {
+	*arr = realloc(*arr, (*len) + data->header->len );
 	}
+//	printf("------------------------------------\n");
+//	printf("IN FUNCTION %p\n",*arr);
+//	printf("test\n");
+	void *offset = *arr + (*len);
+//	printf("*arr = %p  offset = %p\n", *arr, offset);
+	memcpy(offset, &tip, sizeof(u_char));
+//	printf("tip %c\n", tip);  // ceva suspect aici
+	offset += sizeof(u_char);
+	memcpy(offset, &structLen, sizeof(u_int));
+	offset += sizeof(u_int);
 
-//*len += data->header->len;
-if(*len - (int)(*offset - *arr) != 0)
-	return 1;
-else
-	return 0;
-}
-
-int add_at(void **arr, int *len, data_structure *data, int index) {
-
-	if (index < 0)
-		return 0;
-	if(realloc(*arr, (size_t)((size_t)len + (size_t)data->header->len) ) )
-		return 0;
-	void **offset = getPos(*arr, index, *len);
-	int afterLen = (int)((*arr) + *len - *offset); // numarul de byti care trebuie mutat
-	memmove(*offset + data->header->len, *offset, afterLen);
-
-	u_char tip = (u_char)data->header->type;
-	memcpy(*offset, &tip, sizeof(u_char));
-	*offset += sizeof(u_char);
-	memcpy(*offset, &tip, sizeof(u_int));
-	*offset += sizeof(u_int);
 	switch (tip) {
 		case '1':
 		{
 			tip1 *pAux = (tip1*)data->data;
-			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			*offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(*offset, &pAux->bancnota1, sizeof(int8_t));
-			*offset += sizeof(int8_t);
-			memcpy(*offset, &pAux->bancnota2, sizeof(int8_t));
-			*offset += sizeof(int8_t);
-			memcpy(*offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			*offset += strlen((char*)pAux->barosan)+1;
+			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			offset += strlen((char*)pAux->dedicator)+1;
+			memcpy(offset, &pAux->bancnota1, sizeof(int8_t));
+			offset += sizeof(int8_t);
+			memcpy(offset, &pAux->bancnota2, sizeof(int8_t));
+			offset += sizeof(int8_t);
+			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		case '2':
 		{
 			tip2 *pAux = (tip2*)data->data;
-			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			*offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(*offset, &pAux->bancnota1, sizeof(int16_t));
-			*offset += sizeof(int16_t);
-			memcpy(*offset, &pAux->bancnota2, sizeof(int32_t));
-			*offset += sizeof(int32_t);
-			memcpy(*offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			*offset += strlen((char*)pAux->barosan)+1;
+			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			offset += strlen((char*)pAux->dedicator)+1;
+			memcpy(offset, &pAux->bancnota1, sizeof(int16_t));
+			offset += sizeof(int16_t);
+			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
+			offset += sizeof(int32_t);
+			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		case '3':
 		{
 			tip3 *pAux = (tip3*)data->data;
-			memcpy(*offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			*offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(*offset, &pAux->bancnota1, sizeof(int32_t));
-			*offset += sizeof(int32_t);
-			memcpy(*offset, &pAux->bancnota2, sizeof(int32_t));
-			*offset += sizeof(int32_t);
-			memcpy(*offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			*offset += strlen((char*)pAux->barosan)+1;
+			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			offset += strlen((char*)pAux->dedicator)+1;
+			memcpy(offset, &pAux->bancnota1, sizeof(int32_t));
+			offset += sizeof(int32_t);
+			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
+			offset += sizeof(int32_t);
+			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			offset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		default:
@@ -155,10 +99,83 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 	}
 
 *len += data->header->len;
-if(*len - (int)(*offset - *arr) != 0)
-	return 1;
-else
+//printf("*len = %d offset = %p *arr = %p diff = %lu \n", *len, offset, *arr, offset - *arr);
+if(*len - (int)(offset - *arr) != 0)
 	return 0;
+else
+	return 1;
+}
+
+int add_at(void **arr, int *len, data_structure *data, int index) {
+
+	if (index < 0)
+		return 0;
+	if(!(*arr))
+		*arr = malloc(data->header->len);
+	else {
+		arr = realloc(*arr, (*len) + data->header->len );
+  }
+	void *offset = getPos(*arr, index, *len);
+	int afterLen = (int)((*arr) + *len - offset); // numarul de byti care trebuie mutat
+	memmove(offset + data->header->len, offset, afterLen);
+
+	u_char tip = (u_char)data->header->type;
+	u_int structLen = (u_char)data->header->len;
+	memcpy(offset, &tip, sizeof(u_char));
+	offset += sizeof(u_char);
+	memcpy(offset, &structLen, sizeof(u_int));
+	offset += sizeof(u_int);
+	switch (tip) {
+		case '1':
+		{
+			tip1 *pAux = (tip1*)data->data;
+			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			offset += strlen((char*)pAux->dedicator)+1;
+			memcpy(offset, &pAux->bancnota1, sizeof(int8_t));
+			offset += sizeof(int8_t);
+			memcpy(offset, &pAux->bancnota2, sizeof(int8_t));
+			offset += sizeof(int8_t);
+			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			offset += strlen((char*)pAux->barosan)+1;
+			break;
+		}
+		case '2':
+		{
+			tip2 *pAux = (tip2*)data->data;
+			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			offset += strlen((char*)pAux->dedicator)+1;
+			memcpy(offset, &pAux->bancnota1, sizeof(int16_t));
+			offset += sizeof(int16_t);
+			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
+			offset += sizeof(int32_t);
+			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			offset += strlen((char*)pAux->barosan)+1;
+			break;
+		}
+		case '3':
+		{
+			//printf("check\n");
+			tip3 *pAux = (tip3*)data->data;
+			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			offset += strlen((char*)pAux->dedicator)+1;
+			memcpy(offset, &pAux->bancnota1, sizeof(int32_t));
+			offset += sizeof(int32_t);
+			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
+			offset += sizeof(int32_t);
+			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			offset += strlen((char*)pAux->barosan)+1;
+			break;
+		}
+		default:
+			return 0;
+	}
+
+	*len += data->header->len;
+//	printf("*len = %d offset = %p *arr = %p diff = %lu \n", *len, offset, *arr, offset - *arr);
+	if(*len - (int)(offset - *arr) != 0)
+		return 0;
+	else
+		return 1;
 
 }
 
@@ -221,20 +238,24 @@ void find(void *data_block, int len, int index) {
 				printf("Tip invalid de date\n");
 				return;
 		}
+		printf("\n");
 		if (offset - data_block != *structLen)
 			printf("Eroare\n");
 }
 
 int delete_at(void **arr, int *len, int index) {
-	void **offset = getPos(*arr, index, *len);
+	void **offset = arr; // problema e pe aici
+
+	// printf("%lu\n", *arr - getPos(*arr, index, *len));
+	 *offset = getPos(*arr, index, *len);
+	printf("aci%lu\n", getPos(*arr, index, *len) - *arr); // cacat
 	int elLen = 0;
-	if(!memcpy(&elLen, *offset + 1, sizeof(int)))
+	if(!memcpy(&elLen, offset + 1, sizeof(int)))
 		return 0;
-	if(!memmove(*offset, *offset + elLen, elLen))
+	if(!memmove(offset, offset + elLen, elLen))
 		return 0;
-	*len -= elLen;
-	if(!realloc(*arr, *len))
-		return 0;
+	*len = *len - elLen;
+	*arr = realloc(*arr, *len);
 	return 1;
 }
 
@@ -245,7 +266,8 @@ void print(void *arr, int len) {
 	// 	return 0;
 	while(offset < arr + len) {
 		u_char *type = (u_char*)offset;
-		printf("Tipul %d\n", *type);
+		printf("Tipul %c\n", *type);
+		offset += 5;
 		char *primulNume = (char*)offset;
 		switch (*type) {
 			case '1':
@@ -295,6 +317,7 @@ void print(void *arr, int len) {
 				printf("Tip invalid de date\n");
 				return;
 		}
+						printf("\n");
 	}
 }
 
@@ -415,11 +438,13 @@ data_structure *genDataStruct (void *info, int type) {
 void *getPos(void *arr, int index, int len) {
 	void *offset = arr;
 	for(int i = 0; i < index && offset - arr <= len; i++) {
-		int *elLen = (int*)(offset + 1); // probabil sa dea seg fault daca index e mai mare decat nr de elem
+		u_int *elLen = (u_int*)(offset+1);
+
 		offset += *elLen;
 	}
 	if(offset - arr > len)
 		offset = arr + len;
+	printf("%lu\n\n\n", offset - arr);
 	return offset;
 }
 
@@ -436,7 +461,7 @@ int main() {
 while(1) {
 
 // start parsare
-
+printf("\n\nLen = %d  arr = %p\n\n", len, arr);
 char *comanda = (char*)calloc(inputSize, sizeof(char));
 char **cuvant = (char**)calloc(numberOfWords, sizeof(char*));
 int contorWordVec = 0;
@@ -455,19 +480,21 @@ cuvant[contorWordVec] = strtok(NULL, " ");
 // add last  block
 
 if (strcmp(cuvant[0], "insert") == 0) {
-	printf("insert\n");
+//	printf("insert\n");
 	u_char tip = *cuvant[1];
 	data_structure *element = NULL; // vezi poate ramane dangling pointer daca nu il faci null dupa
-	printf("%c\n",  tip);
+//	printf("%c\n",  tip);
 	switch (tip) {
 
 		case '1':
 		{
 			int8_t bancnota1 = (int8_t)atoi(cuvant[3]);
 			int8_t bancnota2 = (int8_t)atoi(cuvant[4]);
-			printf("Dwa1\n");
+			//printf("Dwa1\n");
 			tip1 *pAux = genStruct1(cuvant[2], bancnota1, bancnota2, cuvant[5]);
+	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			//freeStruct((void**)&pAux, tip);
 			// free struct1 si datastruct
 			break;
@@ -475,11 +502,13 @@ if (strcmp(cuvant[0], "insert") == 0) {
 
 		case '2':
 		{
-			printf("Dwa2\n");
+		//	printf("Dwa2\n");
 			int16_t bancnota1 = (int16_t)atoi(cuvant[3]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[4]);
 			tip2 *pAux = genStruct2(cuvant[2], bancnota1, bancnota2, cuvant[5]);
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			//freeStruct((void**)&pAux, tip);
 			// free struct2 si datastructx
 			break;
@@ -487,23 +516,29 @@ if (strcmp(cuvant[0], "insert") == 0) {
 
 		case '3':
 		{
-			printf("Dwa3\n");
+	//		printf("Dwa3\n");
 			int32_t bancnota1 = (int32_t)atoi(cuvant[3]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[4]);
 			tip3 *pAux = genStruct3(cuvant[2], bancnota1, bancnota2, cuvant[5]);
-			printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
-			pAux = element->data;
-			printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
+			// pAux = element->data;
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			//freeStruct((void**)&pAux, tip);
 			// free struct3 si datastruct
 			break;
 		}
 	}
-	printf("E ok\n");
+//	printf("E ok\n");
 
-	if(!add_last(&arr,&len, element))
+	if(!add_last(&arr,&len, element)) {
+	//	printf("\n\nNU INSERT Len = %d arr = %p\n\n", len, arr);
+		free(arr);
+		free(comanda);
+		free(cuvant);
 		return 1;
+	}
+//	printf("\n\nDA INSERT Len = %d arr = %p\n\n", len, arr);
 	//freeData(&element);
 }
 
@@ -511,7 +546,7 @@ if (strcmp(cuvant[0], "insert") == 0) {
 
 if (strcmp(cuvant[0], "insert_at") == 0) {
 
-	printf("insert_at\n");
+//	printf("insert_at\n");
 	int index = atoi(cuvant[1]);
 	u_char tip = *cuvant[2];
 	data_structure *element = NULL; // vezi poate ramane dangling pointer daca nu il faci null dupa
@@ -522,7 +557,9 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			int8_t bancnota1 = (int8_t)atoi(cuvant[4]);
 			int8_t bancnota2 = (int8_t)atoi(cuvant[5]);
 			tip1 *pAux = genStruct1(cuvant[3], bancnota1, bancnota2, cuvant[6]);
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			// free struct1 si datastruct
 			break;
 		}
@@ -532,7 +569,9 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			int16_t bancnota1 = (int16_t)atoi(cuvant[4]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[5]);
 			tip2 *pAux = genStruct2(cuvant[3], bancnota1, bancnota2, cuvant[6]);
+	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			// free struct2 si datastruct
 			break;
 		}
@@ -542,27 +581,41 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			int32_t bancnota1 = (int32_t)atoi(cuvant[4]);
 			int32_t bancnota2 = (int32_t)atoi(cuvant[5]);
 			tip3 *pAux = genStruct3(cuvant[3], bancnota1, bancnota2, cuvant[6]);
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			// free struct3 si datastruct
 			break;
 		}
 	}
-
-	if(!add_at(&arr,&len, element, index))
+		//freeData(&element);
+	if(!add_at(&arr,&len, element, index)) {
+	//	printf("\n\nNU INSERT_At Len = %d arr = %p\n\n", len, arr);
+		free(arr);
+		free(comanda);
+		free(cuvant);
 		return 1;
-	//freeData(&element);
+	}
 
+//	printf("\n\nDA INSERT Len = %d arr = %p\n\n", len, arr);
 }
 
 if (strcmp(cuvant[0], "print") == 0) {
-	printf("print\n");
+//	printf("print\n");
 	print(arr, len);
+}
+
+if (strcmp(cuvant[0], "delete_at") == 0) {
+	int index = atoi(cuvant[1]);
+	printf("index = %d\n", index);
+	if(!delete_at(&arr, &len, index))
+		return 1;
 }
 
 
 //  exit block
 if (strcmp(cuvant[0], "exit") == 0) {
-	printf("exit\n");
+//	printf("exit\n");
 	// free vector //
 
 	free(arr);
@@ -575,8 +628,8 @@ if (strcmp(cuvant[0], "exit") == 0) {
 
 // start dealocare input
 
-free(cuvant);
-free(comanda);
+//free(cuvant);
+//free(comanda);
 // end dealocare input
 }
 
