@@ -47,51 +47,52 @@ int add_last(void **arr, int *len, data_structure *data) {
 //	printf("IN FUNCTION %p\n",*arr);
 //	printf("test\n");
 	void *offset = *arr + (*len);
+	int tempOffset = (int)(offset - *arr);
 //	printf("*arr = %p  offset = %p\n", *arr, offset);
-	memcpy(offset, &tip, sizeof(u_char));
+	memcpy(*arr + tempOffset, &tip, sizeof(u_char));
 //	printf("tip %c\n", tip);  // ceva suspect aici
-	offset += sizeof(u_char);
-	memcpy(offset, &structLen, sizeof(u_int));
-	offset += sizeof(u_int);
+	tempOffset += sizeof(u_char);
+	memcpy(*arr + tempOffset, &structLen, sizeof(u_int));
+	tempOffset += sizeof(u_int);
 
 	switch (tip) {
 		case '1':
 		{
 			tip1 *pAux = (tip1*)data->data;
-			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(offset, &pAux->bancnota1, sizeof(int8_t));
-			offset += sizeof(int8_t);
-			memcpy(offset, &pAux->bancnota2, sizeof(int8_t));
-			offset += sizeof(int8_t);
-			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			offset += strlen((char*)pAux->barosan)+1;
+			memcpy(*arr + tempOffset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			tempOffset += strlen((char*)pAux->dedicator)+1;
+			memcpy(*arr + tempOffset, &pAux->bancnota1, sizeof(int8_t));
+			tempOffset += sizeof(int8_t);
+			memcpy(*arr + tempOffset, &pAux->bancnota2, sizeof(int8_t));
+			tempOffset += sizeof(int8_t);
+			memcpy(*arr + tempOffset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			tempOffset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		case '2':
 		{
 			tip2 *pAux = (tip2*)data->data;
-			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(offset, &pAux->bancnota1, sizeof(int16_t));
-			offset += sizeof(int16_t);
-			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
-			offset += sizeof(int32_t);
-			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			offset += strlen((char*)pAux->barosan)+1;
+			memcpy(*arr + tempOffset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			tempOffset += strlen((char*)pAux->dedicator)+1;
+			memcpy(*arr + tempOffset, &pAux->bancnota1, sizeof(int16_t));
+			tempOffset += sizeof(int16_t);
+			memcpy(*arr + tempOffset, &pAux->bancnota2, sizeof(int32_t));
+			tempOffset += sizeof(int32_t);
+			memcpy(*arr + tempOffset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			tempOffset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		case '3':
 		{
 			tip3 *pAux = (tip3*)data->data;
-			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(offset, &pAux->bancnota1, sizeof(int32_t));
-			offset += sizeof(int32_t);
-			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
-			offset += sizeof(int32_t);
-			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			offset += strlen((char*)pAux->barosan)+1;
+			memcpy(*arr + tempOffset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			tempOffset += strlen((char*)pAux->dedicator)+1;
+			memcpy(*arr + tempOffset, &pAux->bancnota1, sizeof(int32_t));
+			tempOffset += sizeof(int32_t);
+			memcpy(*arr + tempOffset, &pAux->bancnota2, sizeof(int32_t));
+			tempOffset += sizeof(int32_t);
+			memcpy(*arr + tempOffset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			tempOffset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		default:
@@ -99,8 +100,8 @@ int add_last(void **arr, int *len, data_structure *data) {
 	}
 
 *len += data->header->len;
-//printf("*len = %d offset = %p *arr = %p diff = %lu \n", *len, offset, *arr, offset - *arr);
-if(*len - (int)(offset - *arr) != 0)
+// printf("*len = %d tempOffset = %d *arr = %p diff = %lu \n", *len, tempOffset, *arr, offset - *arr);
+if(*len - tempOffset  != 0)
 	return 0;
 else
 	return 1;
@@ -125,9 +126,9 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 	// printf("|%d|%c|\n", tip, tip);
 	u_int structLen = (u_char)data->header->len;
 	memcpy(*arr + tempOffset, &tip, sizeof(u_char));
-	offset += sizeof(u_char);
+	tempOffset += sizeof(u_char);
 	memcpy(*arr + tempOffset, &structLen, sizeof(u_int));
-	offset += sizeof(u_int);
+	tempOffset += sizeof(u_int);
 
 // 	if (index < 0)
 // 		return 0;
@@ -146,45 +147,46 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 // 	offset += sizeof(u_char);
 // 	memcpy(offset, &structLen, sizeof(u_int));
 // 	offset += sizeof(u_int);
+
 	switch (tip) {
 		case '1':
 		{
 			tip1 *pAux = (tip1*)data->data;
-			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(offset, &pAux->bancnota1, sizeof(int8_t));
-			offset += sizeof(int8_t);
-			memcpy(offset, &pAux->bancnota2, sizeof(int8_t));
-			offset += sizeof(int8_t);
-			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			offset += strlen((char*)pAux->barosan)+1;
+			memcpy(*arr + tempOffset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			tempOffset += strlen((char*)pAux->dedicator)+1;
+			memcpy(*arr + tempOffset, &pAux->bancnota1, sizeof(int8_t));
+			tempOffset += sizeof(int8_t);
+			memcpy(*arr + tempOffset, &pAux->bancnota2, sizeof(int8_t));
+			tempOffset += sizeof(int8_t);
+			memcpy(*arr + tempOffset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			tempOffset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		case '2':
 		{
 			tip2 *pAux = (tip2*)data->data;
-			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(offset, &pAux->bancnota1, sizeof(int16_t));
-			offset += sizeof(int16_t);
-			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
-			offset += sizeof(int32_t);
-			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			offset += strlen((char*)pAux->barosan)+1;
+			memcpy(*arr + tempOffset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			tempOffset += strlen((char*)pAux->dedicator)+1;
+			memcpy(*arr + tempOffset, &pAux->bancnota1, sizeof(int16_t));
+			tempOffset += sizeof(int16_t);
+			memcpy(*arr + tempOffset, &pAux->bancnota2, sizeof(int32_t));
+			tempOffset += sizeof(int32_t);
+			memcpy(*arr + tempOffset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			tempOffset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		case '3':
 		{
 			//printf("check\n");
 			tip3 *pAux = (tip3*)data->data;
-			memcpy(offset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
-			offset += strlen((char*)pAux->dedicator)+1;
-			memcpy(offset, &pAux->bancnota1, sizeof(int32_t));
-			offset += sizeof(int32_t);
-			memcpy(offset, &pAux->bancnota2, sizeof(int32_t));
-			offset += sizeof(int32_t);
-			memcpy(offset, pAux->barosan, strlen((char*)pAux->barosan)+1);
-			offset += strlen((char*)pAux->barosan)+1;
+			memcpy(*arr + tempOffset, pAux->dedicator, strlen((char*)pAux->dedicator)+1);
+			tempOffset += strlen((char*)pAux->dedicator)+1;
+			memcpy(*arr + tempOffset, &pAux->bancnota1, sizeof(int32_t));
+			tempOffset += sizeof(int32_t);
+			memcpy(*arr + tempOffset, &pAux->bancnota2, sizeof(int32_t));
+			tempOffset += sizeof(int32_t);
+			memcpy(*arr + tempOffset, pAux->barosan, strlen((char*)pAux->barosan)+1);
+			tempOffset += strlen((char*)pAux->barosan)+1;
 			break;
 		}
 		default:
@@ -192,11 +194,12 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 	}
 
 	*len += elLen;
-	printf("*len = %d offset = %p *arr = %p diff = %lu \n", *len, offset, *arr, offset - *arr);
-	if(elLen - (int)(offset - *arr) != 0)
+	//printf("*len = %d tempOffset = %d *arr = %p diff = %lu \n", *len, tempOffset, *arr, offset - *arr);
+	if( *arr + tempOffset - offset - elLen != 0)
 		return 0;
 	else
 		return 1;
+
 
 }
 
@@ -206,9 +209,10 @@ void find(void *data_block, int len, int index) {
 		return;
 	void *offset = getPos(data_block, index, len);
 		u_char *type = offset;
-		u_int *structLen = offset + 1;
-		offset += sizeof(u_char) + sizeof(u_int);
-		printf("Tipul %d", *type);
+		offset += sizeof(u_char);
+	//	u_int *structLen = offset;
+		offset += sizeof(u_int);
+		printf("Tipul %c\n", *type);
 		switch (*type) {
 			case '1':
 			{
@@ -260,8 +264,8 @@ void find(void *data_block, int len, int index) {
 				return;
 		}
 		printf("\n");
-		if (offset - data_block != *structLen)
-			printf("Eroare\n");
+		// if (offset - data_block != *structLen)
+		// 	printf("Eroare\n");
 }
 
 
@@ -482,7 +486,7 @@ void *getPos(void *arr, int index, int len) {
 	}
 	if(offset - arr > len)
 		offset = arr + len;
-	printf("%lu\n\n\n", offset - arr);
+//	printf("%lu\n\n\n", offset - arr);
 	return offset;
 }
 
@@ -499,7 +503,7 @@ int main() {
 while(1) {
 
 // start parsare
-printf("\n\nLen = %d  arr = %p\n\n", len, arr);
+//printf("\n\nLen = %d  arr = %p\n\n", len, arr);
 char *comanda = (char*)calloc(inputSize, sizeof(char));
 char **cuvant = (char**)calloc(numberOfWords, sizeof(char*));
 int contorWordVec = 0;
@@ -645,9 +649,14 @@ if (strcmp(cuvant[0], "print") == 0) {
 
 if (strcmp(cuvant[0], "delete_at") == 0) {
 	int index = atoi(cuvant[1]);
-	printf("index = %d\n", index);
+	//printf("index = %d\n", index);
 	if(!delete_at(&arr, &len, index))
 		return 1;
+}
+
+if (strcmp(cuvant[0], "find") == 0) {
+	int index = atoi(cuvant[1]);
+	find(arr, len, index);
 }
 
 
