@@ -203,14 +203,15 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 
 }
 
-void find(void *data_block, int len, int index) {
+void find(void *arr, int len, int index) {
 
 	if (index < 0)
 		return;
-	void *offset = getPos(data_block, index, len);
+	void *offset = getPos(arr, index, len);
+	void *checkOffset = offset;
 		u_char *type = offset;
 		offset += sizeof(u_char);
-	//	u_int *structLen = offset;
+		u_int *structLen = offset;
 		offset += sizeof(u_int);
 		printf("Tipul %c\n", *type);
 		switch (*type) {
@@ -264,8 +265,8 @@ void find(void *data_block, int len, int index) {
 				return;
 		}
 		printf("\n");
-		// if (offset - data_block != *structLen)
-		// 	printf("Eroare\n");
+		if (offset - checkOffset != *structLen)
+			printf("Eroare\n");
 }
 
 
@@ -274,16 +275,28 @@ int delete_at(void **arr, int *len, int index) {
 
 	// printf("%lu\n", *arr - getPos(*arr, index, *len));
 	// printf("aci%lu\n", getPos(*arr, index, *len) - *arr); // cacat
-	int elLen = 0;
-	if(!memcpy(&elLen, offset + 1, sizeof(int)))
-		return 0;
+	int elLen = 0; // lungimea struct pe care o sterg
+	memcpy(&elLen, offset + 1, sizeof(int));
+
 	int tempOffset = (int)(offset - *arr);
 
-	if(!memmove(*arr + tempOffset, *arr + tempOffset + elLen, elLen))
-		return 0;
+	memmove(*arr + tempOffset, *arr + tempOffset + elLen, *len - elLen - tempOffset);
 	*len = *len - elLen;
 	*arr = realloc(*arr, *len);
 	return 1;
+
+
+	// int elLen = 0;
+	// if(!memcpy(&elLen, offset + 1, sizeof(int)))
+	// 	return 0;
+	// int tempOffset = (int)(offset - *arr);
+	//
+	// if(!memmove(*arr + tempOffset, *arr + tempOffset + elLen, elLen))
+	// 	return 0;
+	// *len = *len - elLen;
+	// *arr = realloc(*arr, *len);
+	// return 1;
+
 }
 // int delete_at(void **arr, int *len, int index) {
 // 	void **offset = arr; // problema e pe aici
@@ -537,7 +550,7 @@ if (strcmp(cuvant[0], "insert") == 0) {
 	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
 	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
-			//freeStruct((void**)&pAux, tip);
+			freeStruct((void**)&pAux, tip);
 			// free struct1 si datastruct
 			break;
 		}
@@ -551,7 +564,7 @@ if (strcmp(cuvant[0], "insert") == 0) {
 		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
 		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
-			//freeStruct((void**)&pAux, tip);
+			freeStruct((void**)&pAux, tip);
 			// free struct2 si datastructx
 			break;
 		}
@@ -566,7 +579,7 @@ if (strcmp(cuvant[0], "insert") == 0) {
 			element = genDataStruct(pAux, tip);
 			// pAux = element->data;
 		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
-			//freeStruct((void**)&pAux, tip);
+			freeStruct((void**)&pAux, tip);
 			// free struct3 si datastruct
 			break;
 		}
@@ -581,7 +594,7 @@ if (strcmp(cuvant[0], "insert") == 0) {
 		return 1;
 	}
 //	printf("\n\nDA INSERT Len = %d arr = %p\n\n", len, arr);
-	//freeData(&element);
+	 freeData(&element);
 }
 
 // insert at block
@@ -601,6 +614,7 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			tip1 *pAux = genStruct1(cuvant[3], bancnota1, bancnota2, cuvant[6]);
 		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+			freeStruct((void**)&pAux, tip);
 	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			// free struct1 si datastruct
 			break;
@@ -613,6 +627,7 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			tip2 *pAux = genStruct2(cuvant[3], bancnota1, bancnota2, cuvant[6]);
 	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+			freeStruct((void**)&pAux, tip);
 	//		printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			// free struct2 si datastruct
 			break;
@@ -625,12 +640,13 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 			tip3 *pAux = genStruct3(cuvant[3], bancnota1, bancnota2, cuvant[6]);
 		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			element = genDataStruct(pAux, tip);
+			freeStruct((void**)&pAux, tip);
 		//	printf("%s %d %d %s\n", pAux->dedicator, pAux->bancnota1, pAux->bancnota2, pAux->barosan);
 			// free struct3 si datastruct
 			break;
 		}
 	}
-		//freeData(&element);
+
 	if(!add_at(&arr,&len, element, index)) {
 	//	printf("\n\nNU INSERT_At Len = %d arr = %p\n\n", len, arr);
 		free(arr);
@@ -638,6 +654,7 @@ if (strcmp(cuvant[0], "insert_at") == 0) {
 		free(cuvant);
 		return 1;
 	}
+	 freeData(&element);
 
 //	printf("\n\nDA INSERT Len = %d arr = %p\n\n", len, arr);
 }
@@ -675,8 +692,8 @@ if (strcmp(cuvant[0], "exit") == 0) {
 
 // start dealocare input
 
-//free(cuvant);
-//free(comanda);
+free(cuvant);
+free(comanda);
 // end dealocare input
 }
 
