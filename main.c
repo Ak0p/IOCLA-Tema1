@@ -110,21 +110,42 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 
 	if (index < 0)
 		return 0;
+	int elLen = data->header->len;
 	if(!(*arr))
-		*arr = malloc(data->header->len);
+		*arr = malloc(elLen);
 	else {
-		arr = realloc(*arr, (*len) + data->header->len );
+		*arr = realloc(*arr, (*len) + elLen );
   }
 	void *offset = getPos(*arr, index, *len);
-	int afterLen = (int)((*arr) + *len - offset); // numarul de byti care trebuie mutat
-	memmove(offset + data->header->len, offset, afterLen);
+	int tempOffset = (int)(offset - *arr);
+	int afterLen = (int)(*len - tempOffset); // numarul de byti care trebuie mutat
+	memmove(*arr + tempOffset + elLen, *arr + tempOffset, afterLen);
 
 	u_char tip = (u_char)data->header->type;
+	// printf("|%d|%c|\n", tip, tip);
 	u_int structLen = (u_char)data->header->len;
-	memcpy(offset, &tip, sizeof(u_char));
+	memcpy(*arr + tempOffset, &tip, sizeof(u_char));
 	offset += sizeof(u_char);
-	memcpy(offset, &structLen, sizeof(u_int));
+	memcpy(*arr + tempOffset, &structLen, sizeof(u_int));
 	offset += sizeof(u_int);
+
+// 	if (index < 0)
+// 		return 0;
+// 	if(!(*arr))
+// 		*arr = malloc(data->header->len);
+// 	else {
+// 		arr = realloc(*arr, (*len) + data->header->len );
+//   }
+// 	void *offset = getPos(*arr, index, *len);
+// 	int afterLen = (int)((*arr) + *len - offset); // numarul de byti care trebuie mutat
+// 	memmove(offset + data->header->len, offset, afterLen);
+
+// 	u_char tip = (u_char)data->header->type;
+// 	u_int structLen = (u_char)data->header->len;
+// 	memcpy(offset, &tip, sizeof(u_char));
+// 	offset += sizeof(u_char);
+// 	memcpy(offset, &structLen, sizeof(u_int));
+// 	offset += sizeof(u_int);
 	switch (tip) {
 		case '1':
 		{
@@ -170,9 +191,9 @@ int add_at(void **arr, int *len, data_structure *data, int index) {
 			return 0;
 	}
 
-	*len += data->header->len;
-//	printf("*len = %d offset = %p *arr = %p diff = %lu \n", *len, offset, *arr, offset - *arr);
-	if(*len - (int)(offset - *arr) != 0)
+	*len += elLen;
+	printf("*len = %d offset = %p *arr = %p diff = %lu \n", *len, offset, *arr, offset - *arr);
+	if(elLen - (int)(offset - *arr) != 0)
 		return 0;
 	else
 		return 1;
@@ -235,7 +256,7 @@ void find(void *data_block, int len, int index) {
 				break;
 			}
 			default:
-				printf("Tip invalid de date\n");
+				printf("Tip invalid de date : %d \n", *type);
 				return;
 		}
 		printf("\n");
@@ -243,21 +264,38 @@ void find(void *data_block, int len, int index) {
 			printf("Eroare\n");
 }
 
+
 int delete_at(void **arr, int *len, int index) {
-	void **offset = arr; // problema e pe aici
+	void *offset = getPos(*arr, index, *len); // problema e pe aici
 
 	// printf("%lu\n", *arr - getPos(*arr, index, *len));
-	 *offset = getPos(*arr, index, *len);
-	printf("aci%lu\n", getPos(*arr, index, *len) - *arr); // cacat
+	// printf("aci%lu\n", getPos(*arr, index, *len) - *arr); // cacat
 	int elLen = 0;
 	if(!memcpy(&elLen, offset + 1, sizeof(int)))
 		return 0;
-	if(!memmove(offset, offset + elLen, elLen))
+	int tempOffset = (int)(offset - *arr);
+
+	if(!memmove(*arr + tempOffset, *arr + tempOffset + elLen, elLen))
 		return 0;
 	*len = *len - elLen;
 	*arr = realloc(*arr, *len);
 	return 1;
 }
+// int delete_at(void **arr, int *len, int index) {
+// 	void **offset = arr; // problema e pe aici
+
+// 	// printf("%lu\n", *arr - getPos(*arr, index, *len));
+// 	 *offset = getPos(*arr, index, *len);
+// 	printf("aci%lu\n", getPos(*arr, index, *len) - *arr); // cacat
+// 	int elLen = 0;
+// 	if(!memcpy(&elLen, offset + 1, sizeof(int)))
+// 		return 0;
+// 	if(!memmove(offset, offset + elLen, elLen))
+// 		return 0;
+// 	*len = *len - elLen;
+// 	*arr = realloc(*arr, *len);
+// 	return 1;
+// }
 
 void print(void *arr, int len) {
 	void *offset = arr;
