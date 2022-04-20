@@ -380,27 +380,27 @@ void freeStruct(void **el, u_char tip) {
 	switch(tip) {
 		case '1':
 		{
-			tip1 **pFree = (tip1**)el;
-			free((*pFree)->dedicator);
-			free((*pFree)->barosan);
+		//	tip1 **pFree = (tip1**)el;
+			free(((tip1*)(*el))->dedicator);
+			free(((tip1*)(*el))->barosan);
 			free(el);
 			break;
 		}
 
 		case '2':
 		{
-			tip2 **pFree = (tip2**)el;
-			free((*pFree)->dedicator);
-			free((*pFree)->barosan);
+		//	tip2 **pFree = (tip2**)el;
+			free(((tip2*)(*el))->dedicator);
+			free(((tip2*)(*el))->barosan);
 			free(el);
 			break;
 		}
 
 		case '3':
 		{
-			tip3 **pFree = (tip3**)el;
-			free((*pFree)->dedicator);
-			free((*pFree)->barosan);
+	//		tip3 **pFree = (tip3**)el;
+			free(((tip3*)(*el))->dedicator);
+			free(((tip3*)(*el))->barosan);
 			free(el);
 			break;
 		}
