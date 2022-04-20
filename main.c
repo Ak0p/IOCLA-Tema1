@@ -411,7 +411,7 @@ void freeData(data_structure **el) {
 	u_char tip = (*el)->header->type;
 	free((*el)->header);
 	freeStruct((*el)->data, tip);
-	free(el);
+	free(*el);
 }
 
 
